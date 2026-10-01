@@ -1,0 +1,57 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  current: CollectionEntry<'blog'>;
+  posts: CollectionEntry<'blog'>[];
+  lang: Lang;
+}
+
+const { current, posts, lang } = Astro.props;
+const t = useTranslations(lang);
+
+const others = posts.filter((p) => p.id !== current.id);
+
+// Score by number of shared tags, then prefer most recent as a tiebreaker.
+const scored = others
+  .map((p) => {
+    const shared = p.data.tags.filter((tag) => current.data.tags.includes(tag)).length;
+    return { post: p, shared };
+  })
+  .sort((a, b) => b.shared - a.shared || b.post.data.pubDate.getTime() - a.post.data.pubDate.getTime());
+
+const related = scored.slice(0, 3).map((s) => s.post);
+---
+
+{related.length > 0 && (
+  <section class="mt-16 border-t border-slate-200 dark:border-ink-700 pt-10">
+    <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+      <span class="text-alert-orange">▲</span>
+      {t('blog.related')}
+    </h2>
+    <div class="grid gap-5 sm:grid-cols-3">
+      {related.map((post) => {
+        const slug = post.id.split('/').slice(1).join('/');
+        return (
+          <a
+            href={`/${lang}/blog/${slug}/`}
+            class="group rounded-xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-900 p-4 hover:border-signal-cyan dark:hover:border-uptime-green transition-colors"
+          >
+            <p class="text-xs font-mono text-slate-500 mb-2">
+              {post.data.pubDate.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </p>
+            <h3 class="font-semibold group-hover:text-signal-cyan dark:group-hover:text-uptime-green transition-colors line-clamp-2">
+              {post.data.title}
+            </h3>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+)}

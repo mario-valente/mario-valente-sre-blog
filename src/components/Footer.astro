@@ -1,0 +1,22 @@
+---
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 dark:border-ink-700 mt-16">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm font-mono text-slate-500 dark:text-slate-400">
+    <p>© {year} Mario Valente. {t('footer.rights')}</p>
+    <p class="flex items-center gap-2">
+      <span class="text-uptime-green">●</span>
+      {t('footer.builtWith')}
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,79 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RelatedPosts from '../../../components/RelatedPosts.astro';
+import Tag from '../../../components/Tag.astro';
+import { useTranslations } from '../../../i18n/utils';
+import type { Lang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => {
+    const [lang, ...rest] = post.id.split('/');
+    return {
+      params: { lang, slug: rest.join('/') },
+      props: { post },
+    };
+  });
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const { post } = Astro.props;
+const t = useTranslations(lang);
+const { Content } = await render(post);
+
+const allPosts = await getCollection('blog', ({ data }) => data.lang === lang && !data.draft);
+
+// Find the alternate-language version of this same article, if one exists, for the language switcher.
+const allLangPosts = await getCollection('blog', ({ data }) => !data.draft);
+const altPaths: Partial<Record<Lang, string>> = {};
+if (post.data.translationKey) {
+  for (const p of allLangPosts) {
+    if (p.data.translationKey === post.data.translationKey) {
+      const [pLang, ...pRest] = p.id.split('/');
+      altPaths[pLang as Lang] = `/${pLang}/blog/${pRest.join('/')}/`;
+    }
+  }
+}
+
+const readMinutes = Math.max(1, Math.round((post.body?.split(/\s+/).length ?? 200) / 200));
+const dateLocale = lang === 'pt' ? 'pt-BR' : 'en-US';
+---
+
+<BaseLayout
+  title={`${post.data.title} — Mario Valente`}
+  description={post.data.description}
+  lang={lang}
+  image={post.data.heroImage?.src}
+  altPaths={altPaths}
+>
+  <article class="mx-auto max-w-3xl px-4 sm:px-6 py-16">
+    <a href={`/${lang}/blog/`} class="inline-flex items-center gap-1 text-sm font-mono text-slate-500 hover:text-signal-cyan mb-8">
+      ← {t('blog.backToBlog')}
+    </a>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      {post.data.tags.map((tag) => <Tag tag={tag} lang={lang} />)}
+    </div>
+
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight">{post.data.title}</h1>
+
+    <div class="flex items-center gap-3 text-sm font-mono text-slate-500 dark:text-slate-400 mb-10">
+      <span>
+        {t('blog.publishedOn')} {post.data.pubDate.toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' })}
+      </span>
+      <span>·</span>
+      <span>{readMinutes} {t('blog.minRead')}</span>
+    </div>
+
+    {post.data.heroImage && (
+      <img src={post.data.heroImage.src} alt="" class="w-full rounded-xl mb-10" />
+    )}
+
+    <div class="prose-sre">
+      <Content />
+    </div>
+
+    <RelatedPosts current={post} posts={allPosts} lang={lang} />
+  </article>
+</BaseLayout>

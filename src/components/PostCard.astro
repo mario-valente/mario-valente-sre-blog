@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+import Tag from './Tag.astro';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  lang: Lang;
+  featured?: boolean;
+}
+
+const { post, lang, featured = false } = Astro.props;
+const t = useTranslations(lang);
+const { title, description, pubDate, tags, heroImage } = post.data;
+const slug = post.id.split('/').slice(1).join('/');
+const readMinutes = Math.max(1, Math.round((post.body?.split(/\s+/).length ?? 200) / 200));
+---
+
+<article
+  class={`group relative rounded-2xl border border-slate-200 dark:border-ink-700 bg-white dark:bg-ink-900 overflow-hidden hover:border-signal-cyan dark:hover:border-uptime-green transition-colors ${
+    featured ? 'sm:col-span-2' : ''
+  }`}
+>
+  <a href={`/${lang}/blog/${slug}/`} class="block">
+    {heroImage && (
+      <div class="aspect-[16/9] overflow-hidden bg-ink-800">
+        <img
+          src={heroImage.src}
+          alt=""
+          class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+    )}
+    <div class="p-5 sm:p-6">
+      <div class="flex flex-wrap gap-2 mb-3">
+        {tags.slice(0, 3).map((tag) => <Tag tag={tag} lang={lang} />)}
+      </div>
+      <h3 class="text-lg sm:text-xl font-bold mb-2 group-hover:text-signal-cyan dark:group-hover:text-uptime-green transition-colors">
+        {title}
+      </h3>
+      <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">{description}</p>
+      <div class="flex items-center gap-3 text-xs font-mono text-slate-500 dark:text-slate-500">
+        <time datetime={pubDate.toISOString()}>
+          {pubDate.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+        </time>
+        <span>·</span>
+        <span>{readMinutes} {t('blog.minRead')}</span>
+      </div>
+    </div>
+  </a>
+</article>

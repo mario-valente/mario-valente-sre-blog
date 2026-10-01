@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { useTranslations } from '../../i18n/utils';
+import { languages, type Lang } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = useTranslations(lang);
+
+const allPosts = await getCollection('blog', ({ data }) => data.lang === lang && !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const latest = posts.slice(0, 4);
+---
+
+<BaseLayout title={`${'Mario Valente'} — SRE Notes`} description={t('site.tagline')} lang={lang}>
+  <section class="grid-bg border-b border-slate-200 dark:border-ink-700">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-20 sm:py-28">
+      <p class="font-mono text-sm text-uptime-green mb-4 flex items-center gap-2">
+        <span class="inline-block h-2 w-2 rounded-full bg-uptime-green animate-pulse"></span>
+        status: operational
+      </p>
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight max-w-3xl mb-6">
+        {t('home.hero.title')}
+      </h1>
+      <p class="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mb-8">
+        {t('home.hero.subtitle')}
+      </p>
+      <a
+        href={`/${lang}/blog/`}
+        class="inline-flex items-center gap-2 rounded-full bg-signal-cyan text-ink-950 font-mono font-semibold px-6 py-3 hover:bg-uptime-green transition-colors"
+      >
+        {t('home.viewAll')}
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 py-16">
+    <h2 class="text-2xl font-bold mb-8">{t('home.latest')}</h2>
+    {latest.length > 0 ? (
+      <div class="grid gap-6 sm:grid-cols-2">
+        {latest.map((post, i) => <PostCard post={post} lang={lang} featured={i === 0} />)}
+      </div>
+    ) : (
+      <p class="text-slate-500 font-mono">{t('blog.empty')}</p>
+    )}
+  </section>
+</BaseLayout>

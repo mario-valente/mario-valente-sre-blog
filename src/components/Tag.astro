@@ -1,0 +1,28 @@
+---
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  tag: string;
+  lang: Lang;
+}
+
+const { tag, lang } = Astro.props;
+
+// Deterministic color rotation across the vivid SRE accent palette, keyed by tag text.
+const palette = [
+  'text-signal-cyan border-signal-cyan/40 bg-signal-cyan/10',
+  'text-uptime-green border-uptime-green/40 bg-uptime-green/10',
+  'text-alert-orange border-alert-orange/40 bg-alert-orange/10',
+  'text-incident-magenta border-incident-magenta/40 bg-incident-magenta/10',
+  'text-latency-violet border-latency-violet/40 bg-latency-violet/10',
+];
+const hash = [...tag].reduce((acc, c) => acc + c.charCodeAt(0), 0);
+const classes = palette[hash % palette.length];
+---
+
+<a
+  href={`/${lang}/tags/${tag}/`}
+  class={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-mono font-medium ${classes} hover:opacity-80 transition-opacity`}
+>
+  #{tag}
+</a>

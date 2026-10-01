@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* SRE-inspired vivid accents: terminal green, alert orange, signal cyan, incident magenta */
+  --color-signal-cyan: #22d3ee;
+  --color-uptime-green: #34ffb3;
+  --color-alert-orange: #ff8a3d;
+  --color-incident-magenta: #ff4fa3;
+  --color-latency-violet: #a78bfa;
+
+  --color-ink-950: #05070d;
+  --color-ink-900: #0a0f1a;
+  --color-ink-800: #111827;
+  --color-ink-700: #1b2333;
+  --color-ink-600: #2a3548;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f7f8fb;
+  color: #0a0f1a;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark body {
+  background-color: var(--color-ink-950);
+  color: #e6ebf5;
+}
+
+::selection {
+  background-color: var(--color-signal-cyan);
+  color: #05070d;
+}
+
+/* Subtle scanning grid background used on hero sections, evokes monitoring dashboards */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(34, 211, 238, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 211, 238, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.dark .grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(52, 255, 179, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(52, 255, 179, 0.06) 1px, transparent 1px);
+}
+
+.prose-sre {
+  color: inherit;
+  line-height: 1.75;
+}
+
+.prose-sre h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-signal-cyan);
+}
+
+.dark .prose-sre h2 {
+  color: var(--color-uptime-green);
+}
+
+.prose-sre h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-sre p {
+  margin-bottom: 1.25rem;
+}
+
+.prose-sre a {
+  color: var(--color-signal-cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-sre code {
+  font-family: var(--font-mono);
+  background: rgba(34, 211, 238, 0.12);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.35rem;
+  font-size: 0.9em;
+}
+
+.prose-sre pre {
+  background: var(--color-ink-900);
+  color: #e6ebf5;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-ink-700);
+}
+
+.prose-sre pre code {
+  background: none;
+  padding: 0;
+}
+
+.prose-sre ul,
+.prose-sre ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.prose-sre li {
+  margin-bottom: 0.4rem;
+}
+
+.prose-sre blockquote {
+  border-left: 3px solid var(--color-alert-orange);
+  padding-left: 1rem;
+  font-style: italic;
+  color: #6b7280;
+  margin-bottom: 1.25rem;
+}
+
+.dark .prose-sre blockquote {
+  color: #9aa5b8;
+}
+
+.prose-sre img {
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+}
