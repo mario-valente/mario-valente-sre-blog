@@ -22,7 +22,7 @@ const readMinutes = Math.max(1, Math.round((post.body?.split(/\s+/).length ?? 20
     featured ? 'sm:col-span-2' : ''
   }`}
 >
-  <a href={`/${lang}/blog/${slug}/`} class="block">
+  <div>
     {heroImage && (
       <div class="aspect-[16/9] overflow-hidden bg-ink-800">
         <img
@@ -33,11 +33,14 @@ const readMinutes = Math.max(1, Math.round((post.body?.split(/\s+/).length ?? 20
       </div>
     )}
     <div class="p-5 sm:p-6">
-      <div class="flex flex-wrap gap-2 mb-3">
+      <!-- Tags sit above the stretched title link so they stay independently clickable -->
+      <div class="relative z-10 flex flex-wrap gap-2 mb-3">
         {tags.slice(0, 3).map((tag) => <Tag tag={tag} lang={lang} />)}
       </div>
       <h3 class="text-lg sm:text-xl font-bold mb-2 group-hover:text-signal-cyan dark:group-hover:text-uptime-green transition-colors">
-        {title}
+        <a href={`/${lang}/blog/${slug}/`} class="after:absolute after:inset-0 after:content-['']">
+          {title}
+        </a>
       </h3>
       <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">{description}</p>
       <div class="flex items-center gap-3 text-xs font-mono text-slate-500 dark:text-slate-500">
@@ -48,5 +51,5 @@ const readMinutes = Math.max(1, Math.round((post.body?.split(/\s+/).length ?? 20
         <span>{readMinutes} {t('blog.minRead')}</span>
       </div>
     </div>
-  </a>
+  </div>
 </article>
