@@ -4,6 +4,7 @@ description: "Alguns pensamentos sobre caos, resiliência e confiabilidade, e um
 pubDate: 2026-10-07
 lang: "pt"
 tags: ["chaos-engineering", "sre", "kubernetes", "litmus"]
+translationKey: "chaos-engineering-e-mesmo-util"
 ---
 
 Como eu gosto muito desse assunto, resolvi trazer alguns pensamentos sobre ele aqui no blog. E não só isso: resolvi levar um pouco mais a sério essa palavra, **caos**. Nessa imensidão de notícias sobre AI, ferramentas e mais ferramentas, modelos novos, deploys novos, tudo isso me parece meio caótico. Mas é assim mesmo, a nossa área é caótica: muita inovação, pessoas fazendo besteira ou simplesmente criando código ruim que, por um milagre de Deus ou uma conspiração do universo, funciona em produção.
